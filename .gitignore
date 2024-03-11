@@ -1,0 +1,51 @@
+# Laravel 4 specific
+bootstrap/compiled.php
+app/storage/
+
+# Laravel 5 & Lumen specific
+/public/hot
+/public/storage
+
+# Laravel 5 & Lumen specific with changed public path
+public_html/storage
+public_html/hot
+/.vagrant
+
+/node_modules
+/storage/*
+!/storage/.gitkeep
+/vendor
+.env.backup
+.phpunit.result.cache
+docker-compose.override.yml
+Homestead.json
+Homestead.yaml
+npm-debug.log
+yarn-error.log
+/.idea
+/.vscode
+/public/css
+/public/js
+/public/mix-manifest.json
+# But not these files...
+!/public/assets/*
+/public/assets/js
+/public/assets/css
+/public/assets/vendor
+.DS_Store
+.env
+__MACOSX
+cyber
+docker
+docker-compose.yml
+*.zip
+*.sql
+bootstrap/cache
+composer.lock
+public/bigdump.php
+public/C:*
+package-lock.json
+public/.htaccess
+public/ads.txt
+public/angebot.html
+public/todo.txt

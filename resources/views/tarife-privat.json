@@ -1,0 +1,39 @@
+{
+	"Tarife":{
+		"E1_XXL": {
+			"Firma": "Erste Energie", 
+			"Preis": "0.0299", 
+			"Grundpreis": "71.8800", 
+			"Type": "Flex",
+			"Prov": "0.01868"
+		},
+		"E1_XXLplus": {
+			"Firma": "Erste Energie", 
+			"Preis": "0.0399", 
+			"Grundpreis": "71.8800", 
+			"Type": "Flex",
+			"Prov": "0.02618"
+		},
+		"E1_SRA": {
+			"Firma": "Erste Energie", 
+			"Preis": "0.0499", 
+			"Grundpreis": "71.8800", 
+			"Type": "Flex",
+			"Prov": "0.0315"
+		},
+		"E1_SRAplus": {
+			"Firma": "Erste Energie", 
+			"Preis": "0.0599", 
+			"Grundpreis": "71.8800", 
+			"Type": "Flex",
+			"Prov": "0.0375"
+		},
+		"Oeko_private_fair": {
+			"Firma": "Ökostrom", 
+			"Preis": "0.205", 
+			"Grundpreis": "49.92", 
+			"Type": "Fix",
+			"Prov": "0"
+		}
+	}
+}

@@ -1,0 +1,59 @@
+{
+  "menu": [
+    {
+      "url": "/",
+      "name": "Dashboard",
+      "icon": "menu-icon tf-icons bx bx-home-circle",
+      "slug": "dashboard"
+    },
+     
+        {
+      "url": "/team",
+      "name": "Team",
+      "icon": "menu-icon tf-icons bx bx-wallet",
+      "slug": "team.index"
+    },
+
+{
+      "url": "/kunden",
+      "name": "Kunden",
+      "icon": "menu-icon tf-icons bx bx-wallet",
+      "slug": "kunden.index"
+    },
+    {
+      "url": "/vertraege",
+      "name": "Verträge",
+      "icon": "menu-icon tf-icons bx bx-wallet",
+      "slug": "vertraege.index"
+    },
+    {
+      "url": "/calender",
+      "name": "Calendar",
+      "icon": "menu-icon tf-icons bx bx-wallet",
+      "slug": "download.index"
+    },
+    {
+      "url": "/fua",
+      "name": "F&A",
+      "icon": "menu-icon tf-icons bx bx-wallet",
+      "slug": "faq.show"
+    },
+    {
+      "url": "/download",
+      "name": "Downloads",
+      "icon": "menu-icon tf-icons bx bx-wallet",
+      "slug": "downloads.index"
+    }
+
+
+
+
+
+
+
+
+
+
+
+  ]
+}

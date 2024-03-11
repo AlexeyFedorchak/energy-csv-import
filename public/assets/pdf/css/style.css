@@ -1,0 +1,378 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.one-million-head{
+    color: #DF7A1C;
+    font-family: Tahoma, sans-serif;
+    font-style: normal;
+    font-weight: bold;
+    text-decoration: none;
+    font-size: 27px;
+}
+p.one-million-para {
+    color: #231F20;
+    font-family: Verdana, sans-serif;
+    font-style: normal;
+    font-weight: normal;
+    text-decoration: none;
+    font-size: 14px;
+}
+.kunde-left-form {
+    float: left;
+    width: 50%;
+}
+.kunde-right-form {
+    float: right;
+    width: 50%;
+}
+.form-group {
+    margin-bottom: 1rem;
+    border: 1px solid;
+    display: flex;
+    flex-wrap: wrap;
+    background: #f1f4ff;
+}
+input.input-kunde-form {
+    border: none;
+    /* width: calc(100% - 83px); */
+    /* width: calc(84% - 9px); */
+    width: 75%;
+    background: #f1f4ff;
+    cursor: pointer;
+}
+input.input-kunde-form:focus {
+    outline: 0;
+}
+.kunde-form-group{
+    margin-bottom: 0;
+}
+input.kunde-form-input {
+    outline: 0;
+}
+.kunde-form-label-dark{
+    margin-bottom: 0;
+    color: #231F20;
+    font-style: normal;
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 15px;
+    padding: 2px 4px 0px 10px;
+    background: #fff;
+}
+label.kunde-form-label-light {
+    color: #231F20;
+    font-style: normal;
+    font-weight: normal;
+    text-decoration: none;
+    font-size: 13px;
+    padding: 2px 4px 0px 10px;
+    margin-bottom: 0px;
+    background: #fff;
+}
+#telefon{
+    width: 66%;
+}
+span.kunde-small-text {
+    font-size: 10px;
+    font-weight: normal;
+}
+.uid {
+    display: flex;
+}
+.uid-left {
+    width: 60%;
+}
+input#geb {
+    width: 68%;
+}
+input#rechnun {
+    width: 56%;
+}
+input#rechnunf {
+    border-top: 2px solid #fff;
+    width: 100%;
+}
+input#angabe {
+    width: 70%;
+}
+.email-rechnung {
+    clear: both;
+}
+.email-rechnung .form-group {
+    background: none;
+}
+label.ja-label {
+    color: #231F20;
+    font-style: normal;
+    font-weight: normal;
+    text-decoration: none;
+    font-size: 13px;
+    padding: 3px 18px 0px 5px;
+    margin-bottom: 0px;
+    background: #fff;
+}
+.ja-input{
+    width: 15px;
+}
+input#abweichend{
+    width: 52%;
+}
+.w_100{width:100%;}
+.border-none{border: none;outline:none;}
+.bg_light{background:#f1f4ff;}
+textarea {
+  resize: none;
+}
+.tezila-input{outline:none;}
+
+/* Lieferzeitraum css start here  */
+
+section.orange-bg-table {
+    margin: 15px 0px;
+    padding: 10px 0px;
+    background: #fbecde;
+    display: flex;
+}
+
+.tarif-model-table {
+    border-collapse: collapse;
+    width: 100%;
+    border: 1pt solid #DF7A1C;
+}
+
+.tarif-model-table td {
+    padding: 8px;
+    text-align: start;
+    border-right: 1pt solid #DF7A1C;
+}
+tr.highlighted {
+    border-top: 1pt solid #DF7A1C;
+}
+.lieftablebg {
+    color: #231F20;
+    font-style: normal;
+    font-weight: bold;
+    text-decoration: none;
+    font-size: 14px;
+    background: #f8ddc4;
+}
+td.kunde-form-label-light {
+    color: #231F20;
+    font-style: normal;
+    font-weight: normal;
+    text-decoration: none;
+    font-size: 13px;
+    padding: 2px 4px 0px 10px;
+    margin-bottom: 0px;
+    background: #fff;
+}
+.mindest-td{
+    font-size: 10px;
+    color: #231F20;
+    font-style: normal;
+    font-weight: normal;
+    background-color: #fbecde;
+}
+.lightbg{
+    background: #f1f4ff;
+}
+.der-kunde-para{
+    color: #231F20;
+    font-family: Verdana, sans-serif;
+    font-style: normal;
+    font-weight: normal;
+    text-decoration: none;
+    font-size: 12px;
+    padding-top: 10px;
+    margin-bottom: 0px;
+}
+.frist-won{
+    width: initial!important;
+}
+span.mehrkosten-head {
+    margin-bottom: 0;
+    color: #231F20;
+    font-style: normal;
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 14px;
+}
+.bank-form-group {
+    border: 1px solid #DF7A1C;
+    display: flex;
+    flex-wrap: wrap;
+    background: #f1f4ff;
+}
+label.bank-form-label {
+    color: #231F20;
+    font-size: 13px;
+    padding: 8px 10px;
+    margin-bottom: 0px;
+    background: #fff;
+}
+.bank-form-para {
+    color: #231F20;
+    font-size: 13px;
+    padding: 8px 10px;
+    margin-bottom: 0px;
+    background: #fff;
+    border: 1px solid #DF7A1C;
+    min-height: 124px;
+    align-items: end;
+    display: flex;
+}
+.sepa-content{
+    background: #f8ddc4;
+    border: 1px solid #DF7A1C; 
+    padding: 5px;
+}
+.sepa-head{
+    color: #231F20;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: 0px;
+}
+.sepa-para{
+    color: #231F20;
+    font-size: 12px;
+    padding-top: 7px;
+    margin-bottom: 0px; 
+}
+.datum-content-left{
+    float: left;
+    width: 60%;
+    margin-right: 5px;
+}
+.datum-content-right{
+    float: right;
+    width: 39%;
+}
+.vm-id {
+    border: 1px solid #231F20;
+    display: flex;
+    flex-wrap: wrap;
+    background: #f1f4ff;
+    width: 50%;
+}
+.teilza {
+    display: flex;
+}
+input.tezila-input{
+    border: none;
+    width: 66%;
+    background: #f1f4ff;
+    cursor: pointer;
+}
+.beilage {
+    clear: both;
+    display: flex;
+    padding-top: 8px;
+}
+.beilage #kundendaten{
+    padding-top: 0px;
+    padding-left: 8px;
+}
+
+/* footer css  */
+.footer {
+    padding: 20px;
+    margin-top: 40px;
+}
+h4.footer-head {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+.address {
+    text-align: left;
+    margin: 0;
+    padding: 0;
+}
+
+.border-bottom {
+    border-bottom: 10px solid #DF7A1C!important;
+    margin: 0;
+}
+p.footer-para {
+    color: #231F20;
+    font-family: Verdana, sans-serif;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    margin-bottom: 0px;
+}
+.address2{
+    margin-top: 22px;
+}
+span.energie {
+    color: #887E6E;
+    font-family: Tahoma, sans-serif;
+    font-weight: bold;
+    font-size: 15px;
+}
+p.footer-para2{
+    color: #887E6E;
+    font-family: Verdana, sans-serif;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 12px;
+    margin-bottom: 2px;
+}
+p.footer-para3{
+    color: #939598;
+    font-family: Verdana, sans-serif;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 10px;
+    margin-bottom: 0px;
+}
+.mt50{margin-top:50px;}
+.bg_input{
+    background: #f1f4ff;
+    cursor: pointer;
+    border: none;
+    border-left:1px solid #000000;
+    outline:none;
+    padding:0px 12px;
+}
+.w_30{
+    width:30%;
+}
+.w_70{width:70%;}
+.w_59{width:59%;}
+.w_40{width:40%;}
+.fw400{font-weight:400;}
+.br{border-right:1px solid #000000;}
+.w_80{width:80%;}
+.align-center{align-items:center;}
+.bgwhite{background:#e3e0db;}
+.mb-6{margin-bottom:6px;}
+.mb-two{margin-bottom:2px;}
+.w_20{width:20%;}
+.w_55{width:55%;}
+.w_45{width:45%;}
+.w_15{width:15%;}
+.justify-between{justify-content:space-between;}
+.w_custom{width:150px;}
+.w_100_150{width: calc(100% - 150px);}
+.bt0{border-top:0px;}
+.w_10{width:10%;}
+.w_90{width: 90%;}
+.w_100_300{width:calc(100% - 300px);}
+.bgwhite_one{
+    background:#ffffff;
+}
+.w_50px{width:50px;}
+.input{background: #f1f4ff;width:25px;border: none;border-right:1px solid #000000;outline:none;}
+.bl{border-left:1px solid #000000;}
+.mt-two{margin-top:2px;}
+.bt_1{border-top:1px solid #000000;}
+.mx_50{width:40%;}
+.yel_text{color: #ef9722;}
+.qr{width:100px;}
+.align-end{align-items:flex-end;}
+.f10{font-size: 10px;}
