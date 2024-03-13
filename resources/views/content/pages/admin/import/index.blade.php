@@ -13,8 +13,13 @@
     <form method="POST" action="{{ route('admin.import.upload') }}"  enctype="multipart/form-data">
         @csrf
         <div class="form-group">
-            <label for="csv_name">CSV Datei</label>
+            <label for="csv_name">CSV Datei:</label>
             <input type="file" name="csv_name" class="form-control" accept=".csv" required>
+        </div>
+        <br>
+        <div class="form-group">
+          <label for="csv_name">Period:</label>
+          <input type="date" name="period" class="form-control" value="{{ now()->format('Y-m-d') }}" required>
         </div>
         <br>
         <button type="submit" class="btn btn-primary">CSV Hinzufügen</button>

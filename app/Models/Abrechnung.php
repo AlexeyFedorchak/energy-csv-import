@@ -9,10 +9,14 @@ class Abrechnung extends Model
 {
     use HasFactory;
 
+    const UPDATED_AT = null;
+
     protected $table = 'abrechnungen';
     protected $fillable = [
-        'zaehlpunktnummer',
+        'contract_id',
+        'user_id',
         'kwh',
-        'commission'
+        'commission',
+        'period',
     ];
 }

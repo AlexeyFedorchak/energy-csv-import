@@ -1,12 +1,16 @@
 <?php
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Vertrag extends Model
 {
   use HasFactory;
+
+  const MONTHLY = 0;
+  const ANNUAL = 1;
 
   protected $table = 'vertraege'; // Specify the table name if it differs from the model name convention
 
@@ -56,5 +60,23 @@ class Vertrag extends Model
     'unsigned_pdf_path'
   ];
 
-  // You can define any additional methods or relationships here if needed
+  public function abrechnungen()
+  {
+      return $this->hasMany(Abrechnung::class, 'contract_id');
+  }
+
+  public function checkExistingContracts(Carbon $period): bool
+  {
+      if ($this->monat_or_year == self::MONTHLY) {
+          $start = $period->copy()->startOfMonth();
+          $end = $period->copy()->endOfMonth();
+      } else {
+          $start = $period->copy()->startOfYear();
+          $end = $period->copy()->endOfYear();
+      }
+
+      return $this->abrechnungen()
+        ->whereBetween('period', [$start, $end])
+        ->exists();
+  }
 }

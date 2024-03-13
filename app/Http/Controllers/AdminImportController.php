@@ -2,14 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Import;
+use App\Models\Abrechnung;
 use App\Models\SiteSetting;
 use App\Models\Vertrag;
-use DB;
 use Carbon\Carbon;
-use Auth;
-
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AdminImportController extends Controller
 {
@@ -80,97 +78,143 @@ class AdminImportController extends Controller
         return view('content.pages.admin.import.index', compact('siteName', 'wienenergiestrom', 'wienenergiegas', 'enstrogastrom', 'enstrogagas', 'gruenstrom', 'gruengas', 'maxstrom', 'maxgas', 'montanastrom', 'montanagas', 'oekostrom', 'oekogas', 'uwkstrom', 'uwkgas', 'eonstrom', 'eongas', 'goldgasstrom', 'goldgasgas', 'gostrom', 'gogas', 'switchstrom', 'switchgas', 'erstestrom', 'erstegas', 'verbundstrom', 'verbundgas', 'graspreis', 'kokspreis'));
     }
 
-    function updateItemInDB($updateRecordArray, $searchIndex, $jvbTargetIndex, $commissionTargetIndex ) 
+    public function updateItemInDB(array $updateRecordArray, array $index, Carbon $period)
     {
-        if($searchIndex < 0) return -1;
-        foreach($updateRecordArray as $ind=>$updateRecord) {
-            //$vertragObj = Vertrag::firstWhere('zpn', $updateRecord[$searchIndex]);
-            $vertragObj = Vertrag::where('zpn', 'LIKE', '%'.$updateRecord[$searchIndex].'%')->first();
-            //$vertragObj = Vertrag::where('id', '11');
-            // dd($vertragObj);
-            if($vertragObj->count()) {
-                $itemRecord = $vertragObj->toArray();
-                //dd($itemRecord);
-                if($itemRecord['checked'] == 0) {
-                    $vertragObj->checked = 2;
-                    $vertragObj->jvb = $updateRecord[$jvbTargetIndex];
-                    $vertragObj->commission = $updateRecord[$commissionTargetIndex];
-                    $vertragObj->update();
-                } else if($itemRecord['checked'] == 2) {
-                    $vertragObj->jvb = $itemRecord['jvb'] + $updateRecord[$jvbTargetIndex];
-                    print_r('JVB:'. ($itemRecord['jvb'] + $updateRecord[$jvbTargetIndex]));
-                    $vertragObj->commission = $itemRecord['commission'] + $updateRecord[$commissionTargetIndex];
-                    print_r('COMMISSION:'.($itemRecord['commission'] + $updateRecord[$commissionTargetIndex]));
-                    $vertragObj->update();
+        $updateStatus = -1;
+
+        DB::beginTransaction();
+
+        foreach ($updateRecordArray as $updateRecord) {
+
+            $jvb = $this->convertStringToFloat($updateRecord[$index['jvb']] ?? '');
+            $commission = $this->convertStringToFloat($updateRecord[$index['commission']] ?? '');
+
+            if ($jvb == 0 && $commission == 0) {
+                print_r('jvb and commision is not parsed or equal to 0');
+                continue;
+            }
+
+            if ($vertrag = Vertrag::where('zpn', 'LIKE', '%"'.($updateRecord[$index['zpn']] ?? '').'"%')->first()) {
+
+                $monatOrYear = $updateRecord[$index['modalitat']] ?? '';
+                $vertrag->monat_or_year = (false !== stripos($monatOrYear, 'airtime'))
+                    ? Vertrag::MONTHLY
+                    : Vertrag::ANNUAL;
+
+                if ($vertrag->checkExistingContracts($period)) {
+                    print_r('This contract is already processed');
+                    continue;
                 }
-                //print_r($checkedVal);
+
+                if ($vertrag->checked == 0) {
+                    $vertrag->checked = 1;
+                    $vertrag->jvb = $jvb;
+                    $vertrag->commission = $commission;
+                } elseif ($vertrag->checked == 2) {
+                    $vertrag->jvb += $jvb;
+                    $vertrag->commission += $commission;
+                }
+
+                $vertrag->update();
+
+                Abrechnung::create([
+                  'contract_id' => $vertrag->id,
+                  'user_id' => $vertrag->created_by,
+                  'kwh' => $jvb,
+                  'commission' => $commission,
+                  'period' => $period,
+                ]);
+
+                $updateStatus = 0;
             } else {
-                print_r("no found");
+                print_r('no found');
             }
         }
-        
-        Vertrag::where('checked', 2)->update(['checked'=>1]);
-        
 
-        return 0;
+
+        Vertrag::where('checked', 2)->update(['checked' => 1]);
+
+        DB::commit();
+
+        return $updateStatus;
     }
 
     public function upload(Request $request)
     {
-        
         $updateResult = -1;
 
         if ($request->hasFile('csv_name')) {
-            $request->file('csv_name')->getRealPath();
-            $file = fopen($request->file('csv_name')->getRealPath(), "r");
-            $headerRow = fgetcsv($file);
-            $keyIndex = -1;
-            $keyTarget = "ZAEHLPUNKT";
-            $jvbIndex = -1;
-            $jvbTarget = "VERBRAUCHELVSUMME";
-            $commissionIndex = -1;
-            $commissionTarget = "BETRAG";
-            $dataFromCSV = [];
+            $periodDate = Carbon::parse($request->input('period', now()));
+            $path = $request->file('csv_name')->getRealPath();
 
-            for($i=0; $i<sizeof($headerRow); $i++) {
-                if(strcasecmp($headerRow[$i], $keyTarget) === 0 ) {
-                    $keyIndex = $i;
-                } else if(strcasecmp($headerRow[$i], $jvbTarget) === 0 ) {
-                    $jvbIndex = $i;
-                } else if(strcasecmp($headerRow[$i], $commissionTarget) === 0 ) {
-                    $commissionIndex = $i;
-                }
+            $fileData = array_map(function($line) {
+              return str_getcsv($line, ';');
+            }, file($path));
 
+            $headerRow = array_slice($fileData, 0, 1)[0] ?? [];
+
+            $index = [
+              'zpn' => $this->findColumnIndex($headerRow, 'zaehlpunkt')
+                  ?? $this->findColumnIndex($headerRow, 'nummer'),
+              'jvb' => $this->findColumnIndex($headerRow, 'verbrauch')
+                  ?? $this->findColumnIndex($headerRow, 'verbrauchelvsumme'),
+              'commission' => $this->findColumnIndex($headerRow, 'provision')
+                  ?? $this->findColumnIndex($headerRow, 'betrag'),
+              'modalitat' => $this->findColumnIndex($headerRow, 'modal'),
+            ];
+
+            $index = array_map(function($value) {return ($value === null) ? -1 : $value;}, $index);
+
+            if (!in_array(-1, $index)) {
+                $updateResult = $this->updateItemInDB($fileData, $index, $periodDate);
             }
-
-            if($keyIndex >= 0 && $jvbIndex>=0 && $commissionIndex>=0) {
-                while(!feof($file))
-                {
-                    $csvContentRow = fgetcsv($file);
-                    if(is_array($csvContentRow) && gettype($csvContentRow[0]) == 'string') {
-                        if(strlen($csvContentRow[0]) > 0 )
-                            array_push($dataFromCSV, $csvContentRow);
-                    } 
-                }
-                $updateResult = $this->updateItemInDB($dataFromCSV, $keyIndex, $jvbIndex, $commissionIndex);
-            }
-                    
-            fclose($file);
         }
 
-        $dt = Carbon::now('Asia/Kolkata');
-        $todayDate = $dt->toDayDateTimeString();
-        $userActive = Auth::user();
-        $activityLogs = [
-            'user_name' => $userActive->name,
-            'email' => $userActive->email,
-            'date_time' => $todayDate,
-            'activity' => 'Upload "Import Data" File Name ' .$request->csv_name,
-            // 'activity' => 'Upload "Import Data" Id '.$file->id. ' File Name ' .$request->csv_name,
-        ];
-
-        DB::table('activity_logs')->insert($activityLogs);
+        DB::table('activity_logs')->insert([
+            'user_name' => auth()->user()?->name,
+            'email' => auth()->user()?->email,
+            'date_time' => now('Asia/Kolkata')->toDayDateTimeString(),
+            'activity' => 'Upload "Import Data" File Name ' . $request->csv_name,
+        ]);
 
         return view('content.pages.admin.import.upload', compact('updateResult'));
+    }
+
+  /**
+   * @param array $header
+   * @param string $search
+   *
+   * @return int|null
+   */
+    private function findColumnIndex(array $header, string $search): ?int
+    {
+      $row = array_filter($header, function($index) use ($search) {
+        return false !== stripos($index, $search);
+      });
+
+      return count($row) === 1
+        ? key($row)
+        : null;
+    }
+
+  /**
+   * @param string $number
+   *
+   * @return float
+   */
+    private function convertStringToFloat(string $number): float
+    {
+        if (str_contains($number, '.') && str_contains($number, ',')) {
+            $number = str_replace(',', '.', $number);
+            $number = str_replace('.', '', $number);
+
+            return (float) $number;
+        }
+
+        if (str_contains($number, ',')) {
+            $number = str_replace(',', '.', $number);
+        }
+
+        return (float) $number;
     }
 }
