@@ -78,7 +78,7 @@ class AdminImportController extends Controller
         return view('content.pages.admin.import.index', compact('siteName', 'wienenergiestrom', 'wienenergiegas', 'enstrogastrom', 'enstrogagas', 'gruenstrom', 'gruengas', 'maxstrom', 'maxgas', 'montanastrom', 'montanagas', 'oekostrom', 'oekogas', 'uwkstrom', 'uwkgas', 'eonstrom', 'eongas', 'goldgasstrom', 'goldgasgas', 'gostrom', 'gogas', 'switchstrom', 'switchgas', 'erstestrom', 'erstegas', 'verbundstrom', 'verbundgas', 'graspreis', 'kokspreis'));
     }
 
-    public function updateItemInDB(array $updateRecordArray, array $index, Carbon $period)
+    public function updateItemInDB(array $updateRecordArray, array $index, Carbon $period, array $optionalIndex = [])
     {
         $updateStatus = -1;
 
@@ -88,6 +88,7 @@ class AdminImportController extends Controller
 
             $jvb = $this->convertStringToFloat($updateRecord[$index['jvb']] ?? '');
             $commission = $this->convertStringToFloat($updateRecord[$index['commission']] ?? '');
+            $aufschlag = $this->convertStringToFloat($updateRecord[$optionalIndex['aufschlag']] ?? '');
 
             if ($jvb == 0 && $commission == 0) {
                 print_r('jvb and commision is not parsed or equal to 0');
@@ -117,12 +118,27 @@ class AdminImportController extends Controller
 
                 $vertrag->update();
 
+                $now = now();
+                try {
+                    $lieferstart = Carbon::parse($updateRecord[$optionalIndex['lieferstart']] ?? $now);
+                    $provVon = Carbon::parse($updateRecord[$optionalIndex['prov_von']] ?? $now);
+                    $provBis = Carbon::parse($updateRecord[$optionalIndex['prov_bis']] ?? $now);
+                } catch (Throwable $e) {
+                    $lieferstart = $now;
+                    $provVon = $now;
+                    $provBis = $now;
+                }
+
                 Abrechnung::create([
-                  'contract_id' => $vertrag->id,
-                  'user_id' => $vertrag->created_by,
-                  'kwh' => $jvb,
-                  'commission' => $commission,
-                  'period' => $period,
+                    'contract_id' => $vertrag->id,
+                    'user_id' => $vertrag->created_by,
+                    'kwh' => $jvb,
+                    'commission' => $commission,
+                    'period' => $period,
+                    'lieferstart' => $lieferstart,
+                    'prov_von' => $provVon,
+                    'prov_bis' => $provBis,
+                    'aufschlag' => $aufschlag == 0 ? null : $aufschlag,
                 ]);
 
                 $updateStatus = 0;
@@ -154,19 +170,25 @@ class AdminImportController extends Controller
             $headerRow = array_slice($fileData, 0, 1)[0] ?? [];
 
             $index = [
-              'zpn' => $this->findColumnIndex($headerRow, 'zaehlpunkt')
+              'zpn' => $this->findColumnIndex($headerRow, 'hlpunkt')
                   ?? $this->findColumnIndex($headerRow, 'nummer'),
-              'jvb' => $this->findColumnIndex($headerRow, 'verbrauch')
-                  ?? $this->findColumnIndex($headerRow, 'verbrauchelvsumme'),
               'commission' => $this->findColumnIndex($headerRow, 'provision')
                   ?? $this->findColumnIndex($headerRow, 'betrag'),
+              'jvb' => $this->findColumnIndex($headerRow, 'verbrauch'),
               'modalitat' => $this->findColumnIndex($headerRow, 'modal'),
+            ];
+
+            $optionalIndex = [
+              'aufschlag' => $this->findColumnIndex($headerRow, 'aufschlag'),
+              'lieferstart' => $this->findColumnIndex($headerRow, 'lieferstart'),
+              'prov_von' => $this->findColumnIndex($headerRow, 'prov_von'),
+              'prov_bis' => $this->findColumnIndex($headerRow, 'prov_bis'),
             ];
 
             $index = array_map(function($value) {return ($value === null) ? -1 : $value;}, $index);
 
             if (!in_array(-1, $index)) {
-                $updateResult = $this->updateItemInDB($fileData, $index, $periodDate);
+                $updateResult = $this->updateItemInDB($fileData, $index, $periodDate, $optionalIndex);
             }
         }
 

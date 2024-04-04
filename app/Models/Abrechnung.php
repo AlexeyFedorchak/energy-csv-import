@@ -18,5 +18,9 @@ class Abrechnung extends Model
         'kwh',
         'commission',
         'period',
+        'lieferstart',
+        'prov_von',
+        'prov_bis',
+        'aufschlag',
     ];
 }
