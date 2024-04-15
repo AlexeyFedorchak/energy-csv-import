@@ -18,7 +18,7 @@
   $("document").ready(function(){
     setTimeout(function(){
        $("div.alert").remove();
-    }, 3000 ); // 5 secs
+    }, 10000 ); // 10 secs
 
 });
 </script>

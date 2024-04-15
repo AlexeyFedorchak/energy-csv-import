@@ -80,7 +80,7 @@ class AdminImportController extends Controller
 
     public function updateItemInDB(array $updateRecordArray, array $index, Carbon $period, array $optionalIndex = [])
     {
-        $updateStatus = -1;
+        $updateItems = 0;
 
         DB::beginTransaction();
 
@@ -141,7 +141,7 @@ class AdminImportController extends Controller
                     'aufschlag' => $aufschlag == 0 ? null : $aufschlag,
                 ]);
 
-                $updateStatus = 0;
+                $updateItems++;
             } else {
                 print_r('no found');
             }
@@ -152,12 +152,14 @@ class AdminImportController extends Controller
 
         DB::commit();
 
-        return $updateStatus;
+        return $updateItems;
     }
 
     public function upload(Request $request)
     {
-        $updateResult = -1;
+        // Can be -> 'success', 'warning', 'danger', 'info'
+        $alertType = 'success';
+        $alertMessage = 'Datei verarbeitet!!!';
 
         if ($request->hasFile('csv_name')) {
             $periodDate = Carbon::parse($request->input('period', now()));
@@ -173,8 +175,10 @@ class AdminImportController extends Controller
               'zpn' => $this->findColumnIndex($headerRow, 'hlpunkt')
                   ?? $this->findColumnIndex($headerRow, 'nummer'),
               'commission' => $this->findColumnIndex($headerRow, 'provision')
-                  ?? $this->findColumnIndex($headerRow, 'betrag'),
-              'jvb' => $this->findColumnIndex($headerRow, 'verbrauch'),
+                  ?? $this->findColumnIndex($headerRow, 'betrag')
+                  ?? $this->findColumnIndex($headerRow, 'commission'),
+              'jvb' => $this->findColumnIndex($headerRow, 'verbrauch')
+                  ?? $this->findColumnIndex($headerRow, 'jvb'),
               'modalitat' => $this->findColumnIndex($headerRow, 'modal'),
             ];
 
@@ -188,7 +192,13 @@ class AdminImportController extends Controller
             $index = array_map(function($value) {return ($value === null) ? -1 : $value;}, $index);
 
             if (!in_array(-1, $index)) {
-                $updateResult = $this->updateItemInDB($fileData, $index, $periodDate, $optionalIndex);
+                if ($this->updateItemInDB($fileData, $index, $periodDate, $optionalIndex) === 0) {
+                  $alertType = 'warning';
+                  $alertMessage = 'Die Datei ist gültig, es wurde jedoch kein ZPN zum Aktualisieren der Informationen gefunden.';
+                }
+            } else {
+              $alertType = 'danger';
+              $alertMessage = 'Header in dieser Datei werden nicht unterstützt. Die Datei kann nicht verarbeitet werden. Versuchen Sie es mit einer anderen.';
             }
         }
 
@@ -199,7 +209,7 @@ class AdminImportController extends Controller
             'activity' => 'Upload "Import Data" File Name ' . $request->csv_name,
         ]);
 
-        return view('content.pages.admin.import.upload', compact('updateResult'));
+        return view('content.pages.admin.import.upload', compact('alertType', 'alertMessage'));
     }
 
   /**
